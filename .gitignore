@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# personal spotify info
+spotifyInfo.py
+
+# cache info
+.cache*
+
+# html page(s) containing my most recent play
+*.html
