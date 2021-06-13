@@ -1,11 +1,13 @@
 from time import sleep
+import os
+import webview
 from controller import handleSpotify
 
-class Track:
+class TrackHandler:
     def __init__(self, current_track, stylesheet="partifyStylesheet.css", filename="partify"):
         self.current_track = current_track
         self.stylesheet = stylesheet
-        self.filename = filename + ".html"  #f'{filename}-{self.current_track["name"]}.html'
+        self.filename = filename + ".html"
         self._createHtmlPage()
 
     def _createHtmlPage(self):
@@ -23,12 +25,42 @@ class Track:
     def handleNewTrack(self, new_track):
         self.current_track = new_track
         self._createHtmlPage()
-        
 
-cur = Track(handleSpotify())
-while (True): # rip
-    next_track = handleSpotify()
-    while (next_track['name'] == cur.current_track['name']):
-        sleep(5.0)
+
+class Api():
+    def addItem(self, title):
+        print('Added item %s' % title)
+
+    def removeItem(self, item):
+        print('Removed item %s' % item)
+
+    def editItem(self, item):
+        print('Edited item %s' % item)
+
+    def toggleItem(self, item):
+        print('Toggled item %s' % item)
+
+    def toggleFullscreen(self):
+        webview.windows[0].toggle_fullscreen()
+
+
+def launchApp(filename):
+    api = Api()
+    window = webview.create_window('Partify', filename, js_api=api, min_size=(600, 450))
+    webview.start(checkTrackAndUpdate, (window, filename))
+    window.destroy()
+
+def checkTrackAndUpdate(window, file):
+    while (True): # rip
         next_track = handleSpotify()
-    cur.handleNewTrack(next_track)
+        while (next_track['name'] == th.current_track['name']):
+            sleep(5.0)
+            next_track = handleSpotify() # can't request spotify API this frequently, maybe I could just scrape this information from a webplayer instead?
+        th.handleNewTrack(next_track)
+        window.load_url(file)
+
+
+if __name__ == '__main__':
+    th = TrackHandler(handleSpotify())
+    launchApp(th.filename)
+
